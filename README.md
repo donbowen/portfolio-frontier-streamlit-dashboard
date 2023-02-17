@@ -11,8 +11,8 @@ Sadly, their site is no longer working because Heroku, where they hosted it, sto
 If you want to get this app working on your computer so you can use it, play around with it or modify it, and you already have a working python / Anaconda installation, open terminal and run these commands sequentially:
 
 ```sh
-git clone git@github.com:donbowen/dashboard_experiments.git
-cd dashboard_experiments
+git clone git@github.com:donbowen/portfolio-frontier-streamlit-dashboard.git
+cd portfolio-frontier-streamlit-dashboard
 
 conda env create -f environment.yml
 conda activate streamlit-env
