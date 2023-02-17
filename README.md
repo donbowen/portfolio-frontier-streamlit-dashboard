@@ -12,6 +12,8 @@ If you want to get this app working on your computer so you can use it, play aro
 
 ```sh
 git clone git@github.com:donbowen/portfolio-frontier-streamlit-dashboard.git
+# or use github desktop...
+
 cd portfolio-frontier-streamlit-dashboard
 
 conda env create -f environment.yml
