@@ -4,7 +4,7 @@ In a prior year, a team named "Wall Street Bets" (Lana Butorovic, Austen Johnson
 
 Sadly, their site is no longer working because Heroku, where they hosted it, stopped free services. So I'm porting their project here to demonstrate the use of [Streamlit](https://streamlit.io) for dashboard development and deployment. I've refactored the code in places and added a small tweak to the code to allow for levered portfolios (by shorting the risk free asset).
 
-[You can see this dashboard in action here!](https://donbowen-dashboard-experiments-app-7w64ar.streamlit.app/)
+[You can see this dashboard in action here!](https://donbowen-portfolio-frontier-streamlit-dashboard-app-yentvd.streamlit.app/)
 
 ## Local setup
 
