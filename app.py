@@ -77,6 +77,13 @@ with st.sidebar:
     '''
        
     leverage = st.slider('',1,10,1)   
+    
+    '''
+    
+    ---
+    
+    [Source code and contributors here.](https://github.com/donbowen/portfolio-frontier-streamlit-dashboard)
+    '''
 
 #############################################
 # end: sidebar
