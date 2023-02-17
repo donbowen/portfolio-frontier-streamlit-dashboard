@@ -1,12 +1,14 @@
 # What is this?
 
-Previous students wrote a web app, and I'm porting it here to demonstrate the use of streamlit. 
+Previous students wrote a web app. They used [PyPortfolioOpt](https://pyportfolioopt.readthedocs.io/en/latest/index.html) to plot the efficient frontier and tangency portfolio, and then developed a short quiz to assess the risk aversion parameter for a quadratic utility maximizing investor.
 
-Powered by [Streamlit](https://streamlit.io), [pandas](https://pandas.pydata.org/docs/), and [seaborn](seaborn.pydata.org/).
+Sadly, their site is no longer working because Heroku, where they hosted it, stopped free services. So I'm porting their project here to demonstrate the use of [Streamlit](https://streamlit.io) for dashboard development and deployment. 
+
+[You can see this dashboard in action here!](https://donbowen-dashboard-experiments-app-7w64ar.streamlit.app/)
 
 ## Local setup
 
-Assumes you have a [working python 3.9 installation](https://tech.gerardbentley.com/python/beginner/2022/01/29/install-python.html).
+If you want to get this app working on your computer so you can edit it and build, and you already have a working python / Anaconda installation, open terminal and run these commands sequentially:
 
 ```sh
 git clone git@github.com:donbowen/dashboard_experiments.git
@@ -22,11 +24,14 @@ spyder # open any IDE you want to modify app
 
 ## Further ideas 
 
-1. Github actions to update asset download once a month.
+1. Github actions to run `update_data_cache.py` once a month.
 1. Download more assets, including non-ETFs
-1. Use plotly so that output graph is interactive. 
-	- see code belw 
-	- `cov_mat` has asset names, add these as labels
+1. Exploit Streamlit's cache system to make this faster: 
+	- Change code from after the sidebar until the Max Util section to a function that returns the necessary data structures for plotting, and decorate this so it is cached
+	- Code after that can remain the same
+1. Use plotly so that output graph is interactive (e.g. zoom in on the interesting part of the graph)
+	- see code below for pointers
+	- `cov_mat` has asset names, add these as labels to scatterplot
 	
 ```python	
 ## approach 1 for plotly + streamlit: fig.add_trace()

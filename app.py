@@ -65,7 +65,7 @@ with st.sidebar:
        risk_aversion = 0.000001    
        
     f'''
-    ### Result: Your risk aversion parameter: {risk_aversion:.3f}
+    ### Result: Your risk aversion parameter is {risk_aversion:.3f}
     '''
        
     '''
@@ -83,9 +83,11 @@ with st.sidebar:
 #############################################
 
 #############################################
+# start: build dashboard (everything here can be in function and cached)
+#############################################
+
 # get prices and risk free rate
 # then calc E(r), COV
-#############################################
 
 with open('inputs/risk_free_rate.txt', 'r') as f:
     risk_free_rate = float(f.read())
@@ -95,9 +97,7 @@ cov_mat   = pd.read_csv('inputs/cov_mat.csv',index_col=0)
 
 x_vals      = np.sqrt(np.diag(cov_mat.to_numpy()))
 
-#############################################
-# start: plotting
-#############################################
+# start plotting
 
 fig, ax = plt.subplots(figsize=(8, 4))
 
@@ -134,10 +134,14 @@ y_values    = [risk_free_rate, x_to_plot*sharpe_tangent+risk_free_rate]
 plt.plot(x_values, y_values,label='Capital Market Line')
 
 # get the max utility port by giving the package 2 assets: the rf asset and tang port
-# note: 
 
 mu_cml      = np.array([risk_free_rate,ret_tangent])
 cov_cml     = np.array([[0,0],[0,std_tangent]])
+
+#############################################
+# start: update dashboard with Max Utility suggestion (risk aversion input)
+#############################################
+
 ef_max_util = EfficientFrontier(mu_cml,cov_cml,(-leverage+1,leverage))      
          
 ef_max_util.max_quadratic_utility(risk_aversion=risk_aversion)
@@ -156,11 +160,7 @@ y_util_max  = x_util_max*sharpe_tangent+risk_free_rate
 ax.scatter(x_util_max, y_util_max, marker="*", s=100, c="blue", label="Max Util")
 
 # Output
-ax.set_title("Efficient Frontier with ETFs")
 ax.legend(loc='lower right')
 plt.tight_layout()
 
-st.pyplot(fig=fig,)
-
-
-
+st.pyplot(fig=fig)
