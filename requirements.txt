@@ -1,0 +1,9 @@
+numpy
+pandas 
+seaborn
+streamlit
+matplotlib
+pandas-datareader
+spyder
+pyportfolioopt==1.5.2
+yfinance
