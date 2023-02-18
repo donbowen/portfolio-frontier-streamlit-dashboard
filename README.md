@@ -26,15 +26,14 @@ spyder # open any IDE you want to modify app
 
 ## Further ideas 
 
-1. Github actions to run `update_data_cache.py` once a month.
-1. Modify `update_data_cache.py` to download more assets, including non-ETFs.
+1. Easy for me: Add Github action to run `update_data_cache.py` once a month.
+1. Easy for anyone: Modify `update_data_cache.py` to download more assets, including non-ETFs. Just add to the list of tickers. 
 1. Exploit Streamlit's cache system to make this app faster: 
-    - Change code from after the sidebar until the Max Util section to a function that returns the necessary data structures for plotting, and decorate this so it is cached
-    - Code after that can remain the same
-1. Use plotly so that output graph is interactive (e.g. zoom in on the interesting part of the graph)
-    - see code below for pointers
-     `cov_mat` has asset names, add these as labels to scatterplot
-1. The requirements file has no version restrictions. We should set exact versions. 	
+    - Change code from after the sidebar until the Max Util section to a function that returns the necessary data structures for plotting (instead of doing the plotting via the `pyopt` package), and decorate this function so it is cached
+    - Code after that: Use plotly so that output graph is interactive (e.g. zoom in on the interesting part of the graph)
+	- see code below for pointers
+	- `cov_mat` has asset names, add these as labels to scatterplot
+1. Easy for anyone: The requirements file has no version restrictions. We should set exact versions.
 	
 ```python	
 ## approach 1 for plotly + streamlit: fig.add_trace()
@@ -65,4 +64,4 @@ st.plotly_chart(fig3)
 
 ## Notes
 
-Seems duplicative to have a `requirements.txt` and a  `environment.yml`. The former is needed by Streamlit, while the latter makes setting up a conda environment quickly easy. 
+While it seems duplicative to have a `requirements.txt` and a  `environment.yml`, the former is needed by Streamlit and the latter makes setting up a conda environment quickly easy. 
