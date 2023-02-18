@@ -6,22 +6,31 @@ Sadly, their site is no longer working because Heroku, where they hosted it, sto
 
 [You can see this dashboard in action here!](https://donbowen-portfolio-frontier-streamlit-dashboard-app-yentvd.streamlit.app/)
 
-## Local setup
+## How to 
 
-If you want to get this app working on your computer so you can use it, play around with it or modify it, and you already have a working python / Anaconda installation, open terminal and run these commands sequentially:
+If you want to get this app working on your computer so you can use it, play around with it, or modify it, you need:
+1. A working python / Anaconda installation
+1. Git 
+
+The, open a terminal and run these commands one at a time:
 
 ```sh
+# download files
+cd <path to your FIN377 folder> # make sure the cd isn't a repo or inside a repo!
 git clone git@github.com:donbowen/portfolio-frontier-streamlit-dashboard.git
-# or use github desktop...
 
-cd portfolio-frontier-streamlit-dashboard
+# move to the new folder
+cd portfolio-frontier-streamlit-dashboard 
 
+# set up the packages you need for this app to work
 conda env create -f environment.yml
 conda activate streamlit-env
 
+# start the app in a browser window
 streamlit run app.py
 
-spyder # open any IDE you want to modify app 
+# open any IDE you want to modify app 
+spyder  # and when you save the file, the app website will update
 ```
 
 ## Further ideas 
