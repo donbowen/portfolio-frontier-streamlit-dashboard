@@ -248,8 +248,8 @@ fig4 = px.scatter(points,x='x',y='y',
 # perfect formatting text annotation color matches marker
 fig4.update_traces(showlegend=False)
 def trace_specs(t):    
-    'Text annotation color matches marker'
-    'If statement flips the red marker underneith to avoid overlapping text'
+    # Text annotation color matches marker'
+    # If statement flips the red marker underneith to avoid overlapping text'
     if t.marker.color == 'red' and (abs(max_util_port[1]-tangency_port[1])<.02):
         return t.update(textfont_color=t.marker.color, textposition='bottom center')
     else:
