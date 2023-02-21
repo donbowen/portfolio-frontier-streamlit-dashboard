@@ -227,9 +227,9 @@ fig2.update_traces(line_color='blue', line_width=3)
 # assets 
 fig3 = px.scatter(y=assets[0], x=assets[1],hover_name=assets[0].index)
 
-# tang + max_util + formatting
+# tang + max_util 
 points = pd.DataFrame({
-                    'port': ['Max<br>utility<br>port','Tangency<br>port'],
+                    'port': ['Max utility<br>portfolio','Tangency<br>portfolio'],
                     'y': [max_util_port[0],tangency_port[0]],
                     'x': [max_util_port[1],tangency_port[1]],
                     'sym' : ['star','star'],
@@ -244,7 +244,18 @@ fig4 = px.scatter(points,x='x',y='y',
                   labels={'x':'Volatility', 'y':'Expected Returns'},
                   size=[2,2],
                   color='port')
-fig4.update_traces(textposition='top center',showlegend=False)
+
+# perfect formatting text annotation color matches marker
+fig4.update_traces(showlegend=False)
+def trace_specs(t):    
+    'Text annotation color matches marker'
+    'If statement flips the red marker underneith to avoid overlapping text'
+    if t.marker.color == 'red' and (abs(max_util_port[1]-tangency_port[1])<.02):
+        return t.update(textfont_color=t.marker.color, textposition='bottom center')
+    else:
+        return t.update(textfont_color=t.marker.color, textposition='top center')
+
+fig4.for_each_trace(lambda t: trace_specs(t))
 fig4.update_layout(yaxis_range = [0,0.25],
                    xaxis_range = [0,0.4],
                    font={'size':16},
