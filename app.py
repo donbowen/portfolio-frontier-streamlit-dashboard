@@ -1,15 +1,13 @@
 import numpy as np
 import pandas as pd
+import plotly.express as px
+import plotly.graph_objects as go
+import plotly.io as pio
 import streamlit as st
 
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
-
-from pypfopt import plotting
 from pypfopt.efficient_frontier import EfficientFrontier
 
-import copy
+pio.renderers.default='browser' # use when doing dev in Spyder (to show figs)
 
 # Page config
 st.set_page_config(
@@ -65,18 +63,24 @@ with st.sidebar:
        risk_aversion = 0.000001    
        
     f'''
-    ### Result: Your risk aversion parameter is {risk_aversion:.3f}
+    #### Result: Using the survey, your risk aversion parameter is {risk_aversion:.3f}
+    ---
+    ### If you want, you can override that parameter here:
+    
     '''
+    
+    risk_aversion = st.number_input('Risk aversion parameter',0.000001,float(5),format='%0.2f',value=risk_aversion)
        
     '''
+    ---
     ### Part 2: What is the most leverage are you willing to take on? 
     
-    For example, some people are willing to put all their money in the market. For others, it might make sense to borrow additional money to put into the market. 
+    Some people are willing to put all their money in the market. For others, it might make sense to borrow additional money to put into the market. 
     
     For example, leverage is 1 when all your money is in the market, and 2 if you borrowed enough to double your investment in the market.
     '''
        
-    leverage = st.slider('',1,10,1)   
+    leverage = st.number_input('Maximum leverage',1,10,value=1)
     
     '''
     
@@ -89,85 +93,174 @@ with st.sidebar:
 # end: sidebar
 #############################################
 
-#############################################
-# start: build dashboard (everything here can be in function and cached)
-#############################################
+def get_ef_points(ef, ef_param, ef_param_range):
+    """
+    Helper function to get the points on the efficient frontier from an EfficientFrontier object
+    
+    This is _plot_ef without the plotting, and returning the points.
+    """
+    mus, sigmas = [], []
 
-# get prices and risk free rate
-# then calc E(r), COV
+    # Create a portfolio for each value of ef_param_range
+    for param_value in ef_param_range:
+        try:
+            if ef_param == "utility":
+                ef.max_quadratic_utility(param_value)
+            elif ef_param == "risk":
+                ef.efficient_risk(param_value)
+            elif ef_param == "return":
+                ef.efficient_return(param_value)
+            else:
+                raise NotImplementedError(
+                    "ef_param should be one of {'utility', 'risk', 'return'}"
+                )
+        except exceptions.OptimizationError:
+            continue
+        except ValueError:
+            warnings.warn(
+                "Could not construct portfolio for parameter value {:.3f}".format(
+                    param_value
+                )
+            )
 
-with open('inputs/risk_free_rate.txt', 'r') as f:
-    risk_free_rate = float(f.read())
+        ret, sigma, _ = ef.portfolio_performance()
+        mus.append(ret)
+        sigmas.append(sigma)
 
-e_returns = pd.read_csv('inputs/e_returns.csv',index_col=0).squeeze()
-cov_mat   = pd.read_csv('inputs/cov_mat.csv',index_col=0)
-
-x_vals      = np.sqrt(np.diag(cov_mat.to_numpy()))
-
-# start plotting
-
-fig, ax = plt.subplots(figsize=(8, 4))
-
-# set up the EF object & dups for alt uses
-
-ef            = EfficientFrontier(e_returns, cov_mat)
-ef_max_sharpe = copy.copy(ef)
-ef_min_vol    = copy.copy(ef)
-
-# get the min vol (std_min_vol is where we will start the efficient frontier)
-
-ef_min_vol.min_volatility()
-ret_min_vol, std_min_vol, _ = ef_min_vol.portfolio_performance()
-
-# now plot the efficient frontier for each risk level from minimum to max
-
-risk_range = np.linspace(std_min_vol, x_vals.max(), 200)
-plotting.plot_efficient_frontier(ef, ef_param="risk", ef_param_range=risk_range,
-                                 ax=ax, show_assets=True)
- 
-# # Find+plot the tangency portfolio
-
-ef_max_sharpe.max_sharpe(risk_free_rate=risk_free_rate)
-ret_tangent, std_tangent, sharpe_tangent = ef_max_sharpe.portfolio_performance()
-ax.scatter(std_tangent, ret_tangent, marker="*", s=100, c="r", label="Max Sharpe")
-
-# add the CML line from (0,rf) to (x,rf+sharpe*x) for some sensible x
-
-x_vals      = np.sqrt(np.diag(cov_mat.to_numpy()))
-x_to_plot   = x_vals.max()*.8
-x_values    = [0,              x_to_plot]
-y_values    = [risk_free_rate, x_to_plot*sharpe_tangent+risk_free_rate]
-
-plt.plot(x_values, y_values,label='Capital Market Line')
-
-# get the max utility port by giving the package 2 assets: the rf asset and tang port
-
-mu_cml      = np.array([risk_free_rate,ret_tangent])
-cov_cml     = np.array([[0,0],[0,std_tangent]])
+    return mus, sigmas 
 
 #############################################
-# start: update dashboard with Max Utility suggestion (risk aversion input)
+# start: build dashboard (this is cached because nothing here changes due to 
+# user input)
 #############################################
 
+@st.cache_data
+def get_plotting_structures():
+    '''
+
+    Returns
+    -------
+    
+        risk_free_rate
+        assets          = [rets, vols]
+        ef_points       = [rets, vols]
+        tangency_port   = [ret_tangent, vol_tangent, sharpe_tangent]
+        
+    '''
+    
+    
+    # get prices and risk free rate
+    # then calc E(r), COV
+    
+    with open('inputs/risk_free_rate.txt', 'r') as f:
+        rf_rate = float(f.read())
+    
+    # get the x,y values for asset in scatter
+    
+    e_returns = pd.read_csv('inputs/e_returns.csv',index_col=0).squeeze()
+    cov_mat   = pd.read_csv('inputs/cov_mat.csv',index_col=0)        
+    assets    = [e_returns, np.sqrt(np.diag(cov_mat))] 
+    
+    # set up the EF object & dups for alt uses
+    
+    ef            = EfficientFrontier(e_returns, cov_mat)
+    ef_max_sharpe = EfficientFrontier(e_returns, cov_mat)
+    ef_min_vol    = EfficientFrontier(e_returns, cov_mat)
+    
+    # # Find+plot the tangency portfolio
+        
+    ef_max_sharpe.max_sharpe(risk_free_rate=rf_rate)
+    ret_tangent, vol_tangent, sharpe_tangent = ef_max_sharpe.portfolio_performance(risk_free_rate=rf_rate)
+    
+    tangency_port = [ret_tangent, vol_tangent, sharpe_tangent]
+            
+    # prelim step: get the min vol (vol_min_vol is where we will start the efficient frontier)
+    
+    ef_min_vol.min_volatility()
+    ret_min_vol, vol_min_vol, _ = ef_min_vol.portfolio_performance()
+    
+    # get the efficient frontier for each risk level from minimum to max
+        
+    risk_range     = np.linspace(vol_min_vol+.000001, assets[1].max(), 200)    
+    ret_ef, vol_ef = get_ef_points(ef, 'risk', risk_range) 
+    ef_points      = [ret_ef,vol_ef]
+    
+    return rf_rate, assets, ef_points, tangency_port
+
+###############################################################################
+
+###############################################################################
+# get E(r) vol of Max Utility portfolio with leverage and RF asset 
+###############################################################################
+
+rf_rate, assets, ef_points, tangency_port = get_plotting_structures()    
+
+# solve for max util (rf asset + tang port, lev allowed)
+
+mu_cml      = np.array([rf_rate,tangency_port[0]])
+cov_cml     = np.array([[0,0],
+                        [0,tangency_port[1]]])
 ef_max_util = EfficientFrontier(mu_cml,cov_cml,(-leverage+1,leverage))      
-         
+    
 ef_max_util.max_quadratic_utility(risk_aversion=risk_aversion)
 
-# the weight in the tangency port is 
-tang_weight = ef_max_util.weights[1]
+# extract portfolio ret / vol (can't use built in for some reason...)
 
-# which implies the ret_maxU port and vol of that port
-x_util_max  = tang_weight*std_tangent
-y_util_max  = x_util_max*sharpe_tangent+risk_free_rate
+tang_weight_util_max = ef_max_util.weights[1]
+x_util_max           = tang_weight_util_max*tangency_port[1]
+max_util_port        = [x_util_max*tangency_port[2]+rf_rate,
+                        x_util_max]
 
-# note: the following commented line yields ret_maxU, which equals y_util_max above
-# HOWEVER, std_maxU is incorrect (squaring or sqrt it doesn't fix)     
-# ret_maxU, std_maxU, _ = ef_max_util.portfolio_performance()
+#############################################
+# start: plot
+#############################################
 
-ax.scatter(x_util_max, y_util_max, marker="*", s=100, c="blue", label="Max Util")
+# cml
+x_high = assets[1].max()*.8
+fig1 = px.line(x=[0,x_high], y=[rf_rate,rf_rate+x_high*tangency_port[2]])
+fig1.update_traces(line_color='red', line_width=3)
 
-# Output
-ax.legend(loc='lower right')
-plt.tight_layout()
+# ef
+fig2 = px.line(y=ef_points[0], x=ef_points[1])
+fig2.update_traces(line_color='blue', line_width=3)
 
-st.pyplot(fig=fig)
+# assets 
+fig3 = px.scatter(y=assets[0], x=assets[1],hover_name=assets[0].index)
+
+# tang + max_util + formatting
+points = pd.DataFrame({
+                    'port': ['Max<br>utility<br>port','Tangency<br>port'],
+                    'y': [max_util_port[0],tangency_port[0]],
+                    'x': [max_util_port[1],tangency_port[1]],
+                    'sym' : ['star','star'],
+                    'size' : [2,2],
+                    'color':['blue','red']})
+
+fig4 = px.scatter(points,x='x',y='y',
+                  symbol='port',
+                  hover_name='port',text="port",
+                  color_discrete_sequence = ['red','blue'],
+                  symbol_sequence=['star','star'],
+                  labels={'x':'Volatility', 'y':'Expected Returns'},
+                  size=[2,2],
+                  color='port')
+fig4.update_traces(textposition='top center',showlegend=False)
+fig4.update_layout(yaxis_range = [0,0.25],
+                   xaxis_range = [0,0.4],
+                   font={'size':16},
+                   yaxis = dict(tickfont = dict(size=20),titlefont = dict(size=20)),
+                   xaxis = dict(tickfont = dict(size=20),titlefont = dict(size=20)),
+                   
+                   )
+
+fig5 = go.Figure(data=fig1.data + fig2.data + fig3.data + fig4.data, layout = fig4.layout)
+fig5.update_layout(height=600) 
+
+st.plotly_chart(fig5,use_container_width=True)
+
+
+'''
+- The chart is interactive: zoom, hover to see tickers
+- Blue line is the efficient frontier
+- Red line is the "capital market line" representing a portfolio of the risk free asset and the tangency portfolio
+'''

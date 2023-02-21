@@ -33,43 +33,12 @@ streamlit run app.py
 spyder  # and when you save the file, the app website will update
 ```
 
-## Further ideas 
+## Update requests 
 
 1. Easy for me: Add Github action to run `update_data_cache.py` once a month.
 1. Easy for anyone: Modify `update_data_cache.py` to download more assets, including non-ETFs. Just add to the list of tickers. 
-1. Exploit Streamlit's cache system to make this app faster: 
-    - Change code from after the sidebar until the Max Util section to a function that returns the necessary data structures for plotting (instead of doing the plotting via the `pyopt` package), and decorate this function so it is cached
-    - Code after that: Use plotly so that output graph is interactive (e.g. zoom in on the interesting part of the graph)
-	- see code below for pointers
-	- `cov_mat` has asset names, add these as labels to scatterplot
 1. Easy for anyone: The requirements file has no version restrictions. We should set exact versions.
-	
-```python	
-## approach 1 for plotly + streamlit: fig.add_trace()
 
-import plotly.graph_objects as go
-
-fig = go.Figure()
-fig = fig.add_trace(go.Scatter(x=df.col2,y=df.col1,mode=‘lines’,name=‘line1’))
-fig = fig.add_trace(go.Scatter(x=df.col2,y=ucl_array,mode=‘lines’,name=‘ucl =’+str(ucl)))
-fig = fig.update_layout(showlegend=True)
-
-st.plotly_chart(fig)	
-
-## approach 2 for plotly + streamlit: 
-## make figs with px, then combine via go.Figure(fig1+fig2)
-
-import plotly.express as px
-import plotly.graph_objects as go
-
-df   = px.data.iris()
-
-fig1 = px.line(df, x="sepal_width", y="sepal_length")
-fig2 = px.scatter(df, x="sepal_width", y="sepal_length", color="species")
-fig3 = go.Figure(data=fig1.data + fig2.data)
-
-st.plotly_chart(fig3)	
-```
 
 ## Notes
 
