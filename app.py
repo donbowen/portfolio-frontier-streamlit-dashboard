@@ -7,6 +7,8 @@ import streamlit as st
 
 from update_data_cache import get_data
 
+import warnings
+from pypfopt import exceptions
 from pypfopt.efficient_frontier import EfficientFrontier
 
 pio.renderers.default='browser' # use when doing dev in Spyder (to show figs)
