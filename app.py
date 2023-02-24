@@ -208,7 +208,7 @@ def get_plotting_structures(asset_list=None):
     
     # get the efficient frontier for each risk level from minimum to max
         
-    risk_range     = np.linspace(vol_min_vol+.000001, assets[1].max(), 200)    
+    risk_range     = np.linspace(vol_min_vol+.000001, assets[1].max(), 75)    
     ret_ef, vol_ef = get_ef_points(ef, 'risk', risk_range) 
     ef_points      = [ret_ef,vol_ef]
     
