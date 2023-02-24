@@ -208,8 +208,12 @@ def get_plotting_structures(asset_list=None):
     
     # get the efficient frontier for each risk level from minimum to max
         
-    risk_range     = np.linspace(vol_min_vol+.000001, assets[1].max(), 75)    
-    ret_ef, vol_ef = get_ef_points(ef, 'risk', risk_range) 
+    # risk_range     = np.linspace(vol_min_vol+.000001, assets[1].max(), 75)    
+    # ret_ef, vol_ef = get_ef_points(ef, 'risk', risk_range) 
+
+    # risk_range     = np.linspace(vol_min_vol+.000001, assets[1].max(), 75)    
+    ret_ef, vol_ef = get_ef_points(ef, 'return', np.arange(.05,.4,.01)) 
+    
     ef_points      = [ret_ef,vol_ef]
     
     return rf_rate, assets, ef_points, tangency_port
@@ -293,7 +297,7 @@ def trace_specs(t):
         return t.update(textfont_color=t.marker.color, textposition='top center')
 
 fig4.for_each_trace(lambda t: trace_specs(t))
-fig4.update_layout(yaxis_range = [0,0.25],
+fig4.update_layout(yaxis_range = [0,0.4],
                    xaxis_range = [0,0.4],
                    font={'size':16},
                    yaxis = dict(tickfont = dict(size=20),titlefont = dict(size=20)),
