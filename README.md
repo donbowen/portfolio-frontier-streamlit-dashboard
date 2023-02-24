@@ -36,7 +36,6 @@ spyder  # and when you save the file, the app website will update
 ## Update requests 
 
 1. Easy for me: Add Github action to run `update_data_cache.py` once a month.
-1. Easy for anyone: Modify `update_data_cache.py` to download more assets, including non-ETFs. Just add to the list of tickers. 
 1. Easy for anyone: The requirements file has no version restrictions. We should set exact versions.
 
 
