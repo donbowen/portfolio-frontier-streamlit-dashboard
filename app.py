@@ -7,8 +7,6 @@ import streamlit as st
 
 from update_data_cache import get_data
 
-import warnings
-from pypfopt import exceptions
 from pypfopt.efficient_frontier import EfficientFrontier
 
 pio.renderers.default='browser' # use when doing dev in Spyder (to show figs)
@@ -210,11 +208,8 @@ def get_plotting_structures(asset_list=None):
     
     # get the efficient frontier for each risk level from minimum to max
         
-    # risk_range     = np.linspace(vol_min_vol+.000001, assets[1].max(), 75)    
-    # ret_ef, vol_ef = get_ef_points(ef, 'risk', risk_range) 
-
-    # risk_range     = np.linspace(vol_min_vol+.000001, assets[1].max(), 75)    
-    ret_ef, vol_ef = get_ef_points(ef, 'return', np.arange(.05,.4,.01)) 
+    risk_range     = np.linspace(vol_min_vol+.000001, assets[1].max(), 40)    
+    ret_ef, vol_ef = get_ef_points(ef, 'risk', risk_range) 
     
     ef_points      = [ret_ef,vol_ef]
     
