@@ -151,8 +151,8 @@ def get_ef_points(ef, ef_param, ef_param_range):
 def get_plotting_structures(asset_list=None):
     '''
     Assets is a list of tickers, allowing this to be used with custom list 
-    of assets. If none given, uses the default list of ETF assets picked by 
-    WSB team (quick - no downloads required). If given, will download using
+    of assets. If none given, uses the S&P500 as if Feb 2023 (quick - no 
+    downloads required). If list is given, will download using
     yfinance. No error handling provided. 
 
     Returns
