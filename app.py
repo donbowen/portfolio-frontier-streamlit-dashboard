@@ -221,16 +221,16 @@ def get_plotting_structures(asset_list=None):
 ###############################################################################
 
 if uploaded_file is not None:
-    assets = pd.read_csv(uploaded_file,header=None,names=['asset'])
-    assets = assets['asset'].to_list()[:100] # convert to list, max 100 allowed
+    asset_list = pd.read_csv(uploaded_file,header=None,names=['asset'])
+    asset_list = asset_list['asset'].to_list()[:100] # convert to list, max 100 allowed
 else:
-    assets = None 
+    asset_list = None 
 
 ###############################################################################
 # get E(r) vol of Max Utility portfolio with leverage and RF asset 
 ###############################################################################
 
-rf_rate, assets, ef_points, tangency_port = get_plotting_structures(assets)    
+rf_rate, assets, ef_points, tangency_port = get_plotting_structures(asset_list)    
 
 # solve for max util (rf asset + tang port, lev allowed)
 
