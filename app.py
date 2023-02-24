@@ -184,7 +184,7 @@ def get_plotting_structures(assets=None):
         
         # download them and compute
         
-        e_returns, cov_mat, risk_free_rate = get_data(assets)
+        e_returns, cov_mat, rf_rate = get_data(assets)
         
     assets    = [e_returns, np.sqrt(np.diag(cov_mat))] 
     
