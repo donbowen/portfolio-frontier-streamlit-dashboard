@@ -8,11 +8,11 @@ Sadly, their site is no longer working because Heroku, where they hosted it, sto
 
 ## How to 
 
-If you want to get this app working on your computer so you can use it, play around with it, or modify it, you need:
+### If you want to get this app working on your computer so you can use it, play around with it, or modify it, you need:
 1. A working python / Anaconda installation
 1. Git 
 
-The, open a terminal and run these commands one at a time:
+Then, open a terminal and run these commands one at a time:
 
 ```sh
 # download files (you can do this via github desktop too)
@@ -39,7 +39,7 @@ streamlit run app.py
 spyder  # and when you save the file, the app website will update
 ```
 
-When you are ready to deploy the site on the web, 
+### To deploy the site on the web, 
 1. Use Github Desktop to make this a repo your own account. 
 1. Go to streamlit's website, sign up, and deploy it by giving it the URL to your repo.
 1. Wait a short time... and voila!
@@ -51,4 +51,4 @@ When you are ready to deploy the site on the web,
 
 ## Notes
 
-While it seems duplicative to have a `requirements.txt` and a  `environment.yml`, the former is needed by Streamlit and the latter makes setting up a conda environment quickly easy. 
+While it seems duplicative to have a `requirements.txt` and a  `environment.yml`, the former is needed by Streamlit and the latter makes setting up a conda environment quickly easy. So keep both. 
