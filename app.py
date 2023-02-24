@@ -272,6 +272,10 @@ st.plotly_chart(fig5,use_container_width=True)
 
 '''
 - The chart is interactive: zoom, hover to see tickers
-- Blue line is the efficient frontier
-- Red line is the "capital market line" representing a portfolio of the risk free asset and the tangency portfolio
+- Expected returns and volatility are annualized measures
+- The calculation of expected returns using the historical average return for a stock is inaccuracute on a forward looking basis
+- Blue line is the efficient frontier and the blue start is the optimal "all-equity" portfolio
+- Red line is the "capital market line" representing a portfolio that combines the risk free asset and the tangency portfolio
+- The red star is the optimal portfolio combining the risk free asset and the tangency portfolio, based on your risk aversion parameter and choice of maximum allowable leverage
+- If your leverage is more than 1 and your risk aversion low enough, the optimal portfolio might involve borrowing money to invest in equities; if so, the red star will be to the right of the blue star
 '''
