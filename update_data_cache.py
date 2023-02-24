@@ -1,8 +1,8 @@
 # todo set up github actions to recompute these monthly 
 
-def get_data(assets=None):
+def get_data(asset_list=None):
     '''
-    Assets is a list of tickers, allowing this to be used with custom list 
+    asset_list is a list of tickers, allowing this to be used with custom list 
     of assets.
     
     If none given, uses the default list of ETF assets picked by WSB team.
@@ -10,7 +10,7 @@ def get_data(assets=None):
   
     import csv
     from datetime import datetime
-
+    import numpy as np
     from dateutil.relativedelta import relativedelta
     import pandas_datareader as pdr
     import yfinance as yf
@@ -19,12 +19,12 @@ def get_data(assets=None):
 
     # get etf prices
 
-    if not assets:
+    if not asset_list:
         with open('inputs/assets.csv', newline='') as f:
             reader = csv.reader(f)
-            assets = [l[0] for l in reader]
+            asset_list = [l[0] for l in reader]
       
-    #assets = ['SPY', 'IVV', 'VOO', 'SPLG', 'SPXL', 'SPXS', 'SPDN', 'SPUU', 'NSPI', 'SPXU', 'UPRO', 
+    #asset_list = ['SPY', 'IVV', 'VOO', 'SPLG', 'SPXL', 'SPXS', 'SPDN', 'SPUU', 'NSPI', 'SPXU', 'UPRO', 
     #             'SDS', 'SH', 'SSO','JMOM', 'VUG', 'VONV', 'IUSV', 'FREL', 'XSW', 'VHT', 'MGK', 'JVAL', 
     #             'VOT', 'VIOG', 'NURE', 'GLD', 'XLU', 'TQQQ', 'VCR', 'FNCL', 'IFRA',
     #            'PBD', 'RYT', 'FTEC', 'SCHI', 'SUSC', 'VTC', 'VCIT','VEA','IEFA','EFA',
@@ -33,9 +33,14 @@ def get_data(assets=None):
     start  = datetime.now() - relativedelta(years=10)
     end    = datetime.now() 
 
-    asset_prices = yf.download(assets, start=start, end=end, progress=False)
+    asset_prices = yf.download(asset_list, start=start, end=end, progress=False)
     asset_prices = asset_prices.filter(like='Adj Close') # reduce to just columns with this in the name
     asset_prices.columns = asset_prices.columns.get_level_values(1)
+
+    # drop assets with insufficient data (2 years, or 20% of request)
+    
+    valid_cols = asset_prices.isin([' ','NULL',np.nan]).mean() < .8
+    asset_prices = asset_prices.loc[:, valid_cols]
 
     # get risk free rate
 
@@ -43,9 +48,9 @@ def get_data(assets=None):
     risk_free_rate = risk_free_rate.iloc[-1]/100
     risk_free_rate = risk_free_rate.item()
 
-    # compute e_returns, cov_mat
+    # compute e_returns (capm with current rf), cov_mat
 
-    e_returns = expected_returns.capm_return(asset_prices)#, span = 200)
+    e_returns = expected_returns.capm_return(asset_prices,risk_free_rate=risk_free_rate )#, span = 200)
     cov_mat   = risk_models.exp_cov(asset_prices)#,span=100)
 
     return e_returns, cov_mat, risk_free_rate

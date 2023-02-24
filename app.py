@@ -148,7 +148,7 @@ def get_ef_points(ef, ef_param, ef_param_range):
 #############################################
 
 @st.cache_data
-def get_plotting_structures(assets=None):
+def get_plotting_structures(asset_list=None):
     '''
     Assets is a list of tickers, allowing this to be used with custom list 
     of assets. If none given, uses the default list of ETF assets picked by 
@@ -168,7 +168,7 @@ def get_plotting_structures(assets=None):
     # get prices and risk free rate
     # then calc E(r), COV
     
-    if not assets:
+    if not asset_list:
         
         # use default list of assets and precomputed data
         
@@ -184,7 +184,7 @@ def get_plotting_structures(assets=None):
         
         # download them and compute
         
-        e_returns, cov_mat, rf_rate = get_data(assets)
+        e_returns, cov_mat, rf_rate = get_data(asset_list)
         
     assets    = [e_returns, np.sqrt(np.diag(cov_mat))] 
     
@@ -310,7 +310,7 @@ st.plotly_chart(fig5,use_container_width=True)
 '''
 - The chart is interactive: zoom, hover to see tickers
 - Expected returns and volatility are annualized measures
-- The calculation of expected returns using the historical average return for a stock is inaccuracute on a forward looking basis
+- The calculation of expected returns uses CAPM, but will be inaccuracute on a forward looking basis
 - Blue line is the efficient frontier and the blue start is the optimal "all-equity" portfolio
 - Red line is the "capital market line" representing a portfolio that combines the risk free asset and the tangency portfolio
 - The red star is the optimal portfolio combining the risk free asset and the tangency portfolio, based on your risk aversion parameter and choice of maximum allowable leverage
