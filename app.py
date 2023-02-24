@@ -151,7 +151,7 @@ def get_ef_points(ef, ef_param, ef_param_range):
 def get_plotting_structures(asset_list=None):
     '''
     Assets is a list of tickers, allowing this to be used with custom list 
-    of assets. If none given, uses the S&P500 as if Feb 2023 (quick - no 
+    of assets. If none given, uses 200 of the S&P500 as if Feb 2023 (quick - no 
     downloads required). If list is given, will download using
     yfinance. No error handling provided. 
 
@@ -206,9 +206,15 @@ def get_plotting_structures(asset_list=None):
     ef_min_vol.min_volatility()
     ret_min_vol, vol_min_vol, _ = ef_min_vol.portfolio_performance()
     
-    # get the efficient frontier for each risk level from minimum to max
-        
-    risk_range     = np.linspace(vol_min_vol+.000001, assets[1].max(), 40)    
+    # get the efficient frontier 
+    # use risk levels from vol_min_vol to the most risky asset's vol
+    # to make faster, just 20 points
+    # but we want more points at the front of EF where it is curviest --> logscale 
+    
+    risk_range     = np.logspace(np.log(vol_min_vol+.000001), 
+                                 np.log(assets[1].max()), 
+                                 20, 
+                                 base=np.e)
     ret_ef, vol_ef = get_ef_points(ef, 'risk', risk_range) 
     
     ef_points      = [ret_ef,vol_ef]
