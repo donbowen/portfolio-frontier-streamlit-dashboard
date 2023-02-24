@@ -15,11 +15,12 @@ If you want to get this app working on your computer so you can use it, play aro
 The, open a terminal and run these commands one at a time:
 
 ```sh
-# download files
+# download files (you can do this via github desktop too)
 cd <path to your FIN377 folder> # make sure the cd isn't a repo or inside a repo!
 git clone git@github.com:donbowen/portfolio-frontier-streamlit-dashboard.git
 
-# move to the new folder
+# move the terminal to the new folder
+cd <path to your FIN377 folder> 
 cd portfolio-frontier-streamlit-dashboard 
 
 # set up the packages you need for this app to work
@@ -32,6 +33,11 @@ streamlit run app.py
 # open any IDE you want to modify app 
 spyder  # and when you save the file, the app website will update
 ```
+
+When you are ready to deploy the site on the web, 
+1. Save the repo to your own account.
+1. Go to streamlit's website, sign up, and deploy it by giving it the URL to your repo.
+1. Wait a short time... and voila!
 
 ## Update requests 
 
