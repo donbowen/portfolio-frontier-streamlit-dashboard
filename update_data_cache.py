@@ -1,8 +1,11 @@
 # todo set up github actions to recompute these monthly 
 
-def get_data(assets):
+def get_data(assets=None):
     '''
-    Assets is a list of tickers, allowing this to be used with custom lists.
+    Assets is a list of tickers, allowing this to be used with custom list 
+    of assets.
+    
+    If none given, uses the default list of ETF assets picked by WSB team.
     '''
   
     import csv
@@ -17,9 +20,9 @@ def get_data(assets):
     # get etf prices
 
     if not assets:
-        with open('assets.csv', newline='') as f:
+        with open('inputs/assets.csv', newline='') as f:
             reader = csv.reader(f)
-            assets = list(reader)
+            assets = [l[0] for l in reader]
       
     #assets = ['SPY', 'IVV', 'VOO', 'SPLG', 'SPXL', 'SPXS', 'SPDN', 'SPUU', 'NSPI', 'SPXU', 'UPRO', 
     #             'SDS', 'SH', 'SSO','JMOM', 'VUG', 'VONV', 'IUSV', 'FREL', 'XSW', 'VHT', 'MGK', 'JVAL', 

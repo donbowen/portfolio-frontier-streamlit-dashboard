@@ -5,6 +5,8 @@ import plotly.graph_objects as go
 import plotly.io as pio
 import streamlit as st
 
+from update_data_cache import get_data
+
 from pypfopt.efficient_frontier import EfficientFrontier
 
 pio.renderers.default='browser' # use when doing dev in Spyder (to show figs)
@@ -78,9 +80,20 @@ with st.sidebar:
     Some people are willing to put all their money in the market. For others, it might make sense to borrow additional money to put into the market. 
     
     For example, leverage is 1 when all your money is in the market, and 2 if you borrowed enough to double your investment in the market.
+    
+    Allowing leverage to exceed 1x is not typical. 
     '''
        
     leverage = st.number_input('Maximum leverage',1,10,value=1)
+    
+    '''
+    ---
+    ### Part 3 (Optional): Upload a custom list of tickers
+    
+    Must be a csv file with one ticker per line. Maximum of 100 tickers. 
+    '''
+    
+    uploaded_file = st.file_uploader("Choose a CSV file with tickers")
     
     '''
     
@@ -135,8 +148,12 @@ def get_ef_points(ef, ef_param, ef_param_range):
 #############################################
 
 @st.cache_data
-def get_plotting_structures():
+def get_plotting_structures(assets=None):
     '''
+    Assets is a list of tickers, allowing this to be used with custom list 
+    of assets. If none given, uses the default list of ETF assets picked by 
+    WSB team (quick - no downloads required). If given, will download using
+    yfinance. No error handling provided. 
 
     Returns
     -------
@@ -147,18 +164,28 @@ def get_plotting_structures():
         tangency_port   = [ret_tangent, vol_tangent, sharpe_tangent]
         
     '''
-    
-    
+        
     # get prices and risk free rate
     # then calc E(r), COV
     
-    with open('inputs/risk_free_rate.txt', 'r') as f:
-        rf_rate = float(f.read())
-    
-    # get the x,y values for asset in scatter
-    
-    e_returns = pd.read_csv('inputs/e_returns.csv',index_col=0).squeeze()
-    cov_mat   = pd.read_csv('inputs/cov_mat.csv',index_col=0)        
+    if not assets:
+        
+        # use default list of assets and precomputed data
+        
+        with open('inputs/risk_free_rate.txt', 'r') as f:
+            rf_rate = float(f.read())
+        
+        # get the x,y values for asset in scatter
+        
+        e_returns = pd.read_csv('inputs/e_returns.csv',index_col=0).squeeze()
+        cov_mat   = pd.read_csv('inputs/cov_mat.csv',index_col=0)        
+        
+    else:
+        
+        # download them and compute
+        
+        e_returns, cov_mat, risk_free_rate = get_data(assets)
+        
     assets    = [e_returns, np.sqrt(np.diag(cov_mat))] 
     
     # set up the EF object & dups for alt uses
@@ -190,10 +217,20 @@ def get_plotting_structures():
 ###############################################################################
 
 ###############################################################################
+# decide on assets: default list or uploaded list
+###############################################################################
+
+if uploaded_file is not None:
+    assets = pd.read_csv(uploaded_file,header=None,names=['asset'])
+    assets = assets['asset'].to_list()[:100] # convert to list, max 100 allowed
+else:
+    assets = None 
+
+###############################################################################
 # get E(r) vol of Max Utility portfolio with leverage and RF asset 
 ###############################################################################
 
-rf_rate, assets, ef_points, tangency_port = get_plotting_structures()    
+rf_rate, assets, ef_points, tangency_port = get_plotting_structures(assets)    
 
 # solve for max util (rf asset + tang port, lev allowed)
 
