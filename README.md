@@ -29,7 +29,7 @@ rm -r -fo .git
 # set up the packages you need for this app to work 
 # (YOU CAN SKIP THESE if you have already streamlit-env, or you can 
 # give this one a slightly diff name by modifying the environment.yml file)
-conda env create -f environment.yml
+conda env create -f streamlit_env.yml
 conda activate streamlit-env
 
 # start the app in a browser window
@@ -51,4 +51,4 @@ spyder  # and when you save the file, the app website will update
 
 ## Notes
 
-While it seems duplicative to have a `requirements.txt` and a  `environment.yml`, the former is needed by Streamlit and the latter makes setting up a conda environment quickly easy. So keep both. 
+While it seems duplicative to have a `requirements.txt` and a  `streamlit_env.yml`, the former is needed by Streamlit and the latter makes setting up a conda environment quickly easy. So keep both. 
