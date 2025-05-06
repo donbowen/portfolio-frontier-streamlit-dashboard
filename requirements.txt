@@ -1,10 +1,12 @@
-numpy
-pandas 
-seaborn
-streamlit
-matplotlib
-pandas-datareader
-spyder
-pyportfolioopt==1.5.2
-yfinance
-plotly < 6
+# requirements.txt — frozen 2025‑05‑05
+numpy==2.2.5               # Apr 19 2025 :contentReference[oaicite:0]{index=0}
+pandas==2.2.3              # Sep 20 2024 :contentReference[oaicite:1]{index=1}
+seaborn==0.13.2            # Jan 25 2024 :contentReference[oaicite:2]{index=2}
+streamlit==1.45.0          # Apr 29 2025 :contentReference[oaicite:3]{index=3}
+matplotlib==3.10.1         # Feb 27 2025 :contentReference[oaicite:4]{index=4}
+pandas-datareader==0.10.0  # Jul 13 2021 (latest) :contentReference[oaicite:5]{index=5}
+spyder==6.0.5              # Mar 26 2025 :contentReference[oaicite:6]{index=6}
+pyportfolioopt==1.5.2      # Mar 23 2022 (your chosen pin) :contentReference[oaicite:7]{index=7}
+yfinance==0.2.58           # May 02 2025 :contentReference[oaicite:8]{index=8}
+plotly==5.22.0             # May 01 2024 – last 5.x before v6 :contentReference[oaicite:9]{index=9}
+
