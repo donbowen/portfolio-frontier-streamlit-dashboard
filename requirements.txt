@@ -7,4 +7,4 @@ pandas-datareader
 spyder
 pyportfolioopt==1.5.2
 yfinance
-plotly
+plotly < 6
